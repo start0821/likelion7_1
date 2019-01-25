@@ -2,10 +2,10 @@
 <link rel="js" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js">
 <link rel="stylesheet" href="{% static "vis.min.css" %}">
 <h1>결과</h1>
+<a href="{% url 'wordcount:index' %}">home으로 돌아가기</a>
 
 <div id='bubbles'></div>
 
-<a href="{% url 'wordcount:index' %}">home으로 돌아가기</a>
 
 <script type="text/javascript">
 var network;
@@ -37,30 +37,60 @@ function loadVis(){
     // html에 있는 div
     console.log("vis 타입 : "+typeof(vis));
     
-    console.log("vis.Dataset 형식 : "+typeof(vis.Dataset))
-    var nodes = new vis.Dataset([
+    console.log("vis.Dataset 형식 : "+typeof(vis.DataSet))
+
+    var nodes = new vis.DataSet([
         {% for key,data in words.items %}
-            { "label":"{{key.0}}", "num":{{data}} },
+            { label:"{{key.0}}", value:{{data}} },
         {% endfor %}
     ]);
     var container = document.getElementById('bubbles');
 
     var data = {
     nodes: nodes,
-    edges: edges
     };
 
     var options = {
-        nodes: {borderWidth:0,shape:"circle",color:{background:'#F92C55', highlight:{background:'#F92C55', border: '#F92C55'}},font:{color:'#fff'}},
+        nodes: {
+            borderWidth:0,
+            shape:"circle",
+            color:{
+                background:'#F92C55', 
+                highlight:{
+                    background:'#F92C55', 
+                    border: '#F92C55'
+                }
+            },
+            font:{
+                color:'#fff'
+            },
+            scaling:{
+            label: {
+              min:20,
+              max:80
+            }
+          }
+        },
         physics: {
             stabilization: false,
             minVelocity:  0.01,
             solver: "repulsion",
             repulsion: {
-            nodeDistance: 30
+            nodeDistance: 60
             }
         }
     }
+
+    // initialize your network!
+    network = new vis.Network(container, data, options);
+
+    network.once("stabilizationIterationsDone", function() {
+    network.focus('p1', {
+            scale: 0.7,
+        });
+    overlay();
+        
+    });
 }
 
     function setup() {
