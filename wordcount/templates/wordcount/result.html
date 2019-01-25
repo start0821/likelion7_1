@@ -1,0 +1,74 @@
+{% load static %}
+<link rel="js" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js">
+<link rel="stylesheet" href="{% static "vis.min.css" %}">
+<h1>결과</h1>
+
+<div id='bubbles'></div>
+
+<a href="{% url 'wordcount:index' %}">home으로 돌아가기</a>
+
+<script type="text/javascript">
+var network;
+
+//this function will work cross-browser for loading scripts asynchronously
+function loadScript(src, callback)
+{
+  var s,
+      r,
+      t;
+  r = false;
+  s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.src = src;
+  s.onload = s.onreadystatechange = function() {
+    //console.log( this.readyState ); //uncomment this line to see which ready states are called.
+    if ( !r && (!this.readyState || this.readyState == 'complete') )
+    {
+      r = true;
+      callback();
+    }
+  };
+  t = document.getElementsByTagName('script')[0];
+  t.parentNode.insertBefore(s, t);
+}
+
+function loadVis(){
+    console.log("{{words}}");
+    // html에 있는 div
+    console.log("vis 타입 : "+typeof(vis));
+    
+    console.log("vis.Dataset 형식 : "+typeof(vis.Dataset))
+    var nodes = new vis.Dataset([
+        {% for key,data in words.items %}
+            { "label":"{{key.0}}", "num":{{data}} },
+        {% endfor %}
+    ]);
+    var container = document.getElementById('bubbles');
+
+    var data = {
+    nodes: nodes,
+    edges: edges
+    };
+
+    var options = {
+        nodes: {borderWidth:0,shape:"circle",color:{background:'#F92C55', highlight:{background:'#F92C55', border: '#F92C55'}},font:{color:'#fff'}},
+        physics: {
+            stabilization: false,
+            minVelocity:  0.01,
+            solver: "repulsion",
+            repulsion: {
+            nodeDistance: 30
+            }
+        }
+    }
+}
+
+    function setup() {
+        loadScript('{% static "vis.min.js" %}', loadVis);
+    }
+    window.onload = setup;
+
+    
+    
+    
+</script>

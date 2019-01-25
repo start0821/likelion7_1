@@ -1,0 +1,9 @@
+<h1>워드카운터를 만들어봅시다!</h1>
+
+<a href="{% url 'wordcount:about' %}">ABOUT</a>
+
+<form action="{% url 'wordcount:result' %}" method="get">
+    <TEXTarea cols="40" rows="10" name="fulltext"></TEXTarea>
+    <br>
+    <input type="submit" value="Count~!">
+</form>
